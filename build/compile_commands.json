@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/edissonprieto/Documentos/Paralela y distribuida/ComputacionParalela/build",
+  "command": "/bin/c++   -isystem /usr/local/include/opencv4  -g   -o CMakeFiles/EfectoImagen.dir/EfectoImagen.cpp.o -c \"/home/edissonprieto/Documentos/Paralela y distribuida/ComputacionParalela/Practica 1/EfectoImagen.cpp\"",
+  "file": "/home/edissonprieto/Documentos/Paralela y distribuida/ComputacionParalela/Practica 1/EfectoImagen.cpp"
+}
+]

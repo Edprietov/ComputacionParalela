@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.tcc": "cpp",
+        "ostream": "cpp"
+    },
+    "cmake.sourceDirectory": "${workspaceFolder}/Practica 1",
+    "cmake.configureOnOpen": true
+}

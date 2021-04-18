@@ -1,3 +1,0 @@
-/home/edissonprieto/Documentos/Paralela y distribuida/Prácticas/Prueba/Grayscale/CMakeFiles/rebuild_cache.dir
-/home/edissonprieto/Documentos/Paralela y distribuida/Prácticas/Prueba/Grayscale/CMakeFiles/edit_cache.dir
-/home/edissonprieto/Documentos/Paralela y distribuida/Prácticas/Prueba/Grayscale/CMakeFiles/Grayscale.dir
