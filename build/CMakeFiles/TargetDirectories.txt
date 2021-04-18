@@ -1,3 +1,0 @@
-/home/edissonprieto/Documentos/Paralela y distribuida/ComputacionParalela/build/CMakeFiles/rebuild_cache.dir
-/home/edissonprieto/Documentos/Paralela y distribuida/ComputacionParalela/build/CMakeFiles/edit_cache.dir
-/home/edissonprieto/Documentos/Paralela y distribuida/ComputacionParalela/build/CMakeFiles/EfectoImagen.dir
