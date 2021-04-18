@@ -7,26 +7,29 @@
 using namespace cv;
 using namespace std;
 
+
 //Prototipos de funciones
 Mat lectura_imagen(String nombre_imagen);
 void filtro_escala_grises(String nombre);
+void filtro_amarillo(String nombre);
+ofstream archivo;
+
 
 int main(int argc, char **argv)
 {
-    filtro_escala_grises(argv[1]);
-
+    archivo.open("resultados.txt");
+    filtro_amarillo(argv[1]);
+    archivo.close();
     waitKey(0);
     return 0;
 }
 
-//***filtro1*****
-void filtro_escala_grises(String nombre)
+//***filtro2*****
+void filtro_amarillo(String nombre)
 {
     int pixel = 0;
     short veces = 0;
     unsigned tiempo_final, tiempo_inicial;
-    ofstream archivo;
-    archivo.open("resultados.txt");
     Mat imagen ;
 
     while (veces++ < 16)
@@ -44,42 +47,32 @@ void filtro_escala_grises(String nombre)
                 int rojo = (int)color.val[2];
                 int promedio = (int)((azul + verde + rojo) / 3);
 
-                color.val[0] = promedio;
-                color.val[1] = promedio;
-                color.val[2] = promedio;
-
+                if( rojo > 200 && verde > 100 && azul < 85  ){
+                color.val[0] = azul;
+                color.val[1] = verde;
+                color.val[2] = rojo;
+                }
+                else{
+                color.val[0] = 255;
+                color.val[1] = 255;
+                color.val[2] = 255;
+                }
+                
                 imagen.at<Vec3b>(y, x) = color;
             }
         }
         tiempo_final = clock();
 
-        double tiempo_total = double(tiempo_final - tiempo_inicial);
+        double tiempo_total = (double(tiempo_final - tiempo_inicial)/CLOCKS_PER_SEC);
         if (veces == 1)
         {
-            archivo << "Tiempo de ejecucion: "
+            archivo << "Tiempo de ejecucion para aplicación sobre " <<  nombre 
                     << "\n";
         }
         else
         {
-            archivo << tiempo_total << "\n";
+            archivo << tiempo_total <<  " segundos " << "\n";
         }
     }
-    imwrite("filtrada" + nombre, imagen);
-    archivo.close();
-}
-//*****Procedimiento que lee la imagen******
-Mat lectura_imagen(String nombre_imagen)
-{
-    // Lectura de la imagen
-    Mat imagen = imread(nombre_imagen, 1);
-
-    // Manejo de error en caso de que no sea encontrada la imagen
-    if (imagen.empty())
-    {
-        cout << "Archivo de imagen "
-             << "No encontrado" << endl;
-        cin.get();
-        return imagen;
-    }
-    return imagen;
+    imwrite("filtradacolor" + nombre, imagen);
 }

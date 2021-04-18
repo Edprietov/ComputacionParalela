@@ -1,0 +1,32 @@
+Tiempo de ejecucion para aplicación sobre sunflower.jpg
+0.458553 segundos 
+0.462612 segundos 
+0.44676 segundos 
+0.44316 segundos 
+0.457177 segundos 
+0.442586 segundos 
+0.465107 segundos 
+0.448608 segundos 
+0.463133 segundos 
+0.453177 segundos 
+0.448073 segundos 
+0.441994 segundos 
+0.446932 segundos 
+0.442333 segundos 
+0.453619 segundos 
+Tiempo de ejecucion para aplicación sobre figuras.jpg
+0.005054 segundos 
+0.005039 segundos 
+0.00503 segundos 
+0.005024 segundos 
+0.005028 segundos 
+0.005023 segundos 
+0.005026 segundos 
+0.005056 segundos 
+0.00504 segundos 
+0.005045 segundos 
+0.005034 segundos 
+0.005017 segundos 
+0.005001 segundos 
+0.00497 segundos 
+0.004915 segundos 
