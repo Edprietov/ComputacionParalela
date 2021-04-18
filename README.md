@@ -1,3 +1,15 @@
-# Práctica 1
+ # Computación paralela y distribuida
 
-Aplicación de filtro sobre una imagen de forma secuencial y usando hilos POSIX.
+## Universidad Nacional de Colombia
+
+ En este repositorio se almacenara el desarrollo de las prácticas y proyecto de la asignatura.
+
+> El grupo esta compuesto por:
+>
+> - Oscar Alvarez
+> - Edisson Prieto
+> - Valentina Viafara 
+
+
+
+ 
