@@ -10,16 +10,13 @@ using namespace std;
 
 //Prototipos de funciones
 Mat lectura_imagen(String nombre_imagen);
-void filtro_escala_grises(String nombre);
 void filtro_amarillo(String nombre);
 ofstream archivo;
 
 
 int main(int argc, char **argv)
 {
-    archivo.open("resultados.txt");
     filtro_amarillo(argv[1]);
-    archivo.close();
     waitKey(0);
     return 0;
 }
@@ -28,12 +25,9 @@ int main(int argc, char **argv)
 void filtro_amarillo(String nombre)
 {
     int pixel = 0;
-    short veces = 0;
     unsigned tiempo_final, tiempo_inicial;
     Mat imagen ;
 
-    while (veces++ < 16)
-    {
         imagen = lectura_imagen(nombre);
         tiempo_inicial = clock();
 
@@ -61,18 +55,22 @@ void filtro_amarillo(String nombre)
                 imagen.at<Vec3b>(y, x) = color;
             }
         }
-        tiempo_final = clock();
-
-        double tiempo_total = (double(tiempo_final - tiempo_inicial)/CLOCKS_PER_SEC);
-        if (veces == 1)
-        {
-            archivo << "Tiempo de ejecucion para aplicación sobre " <<  nombre 
-                    << "\n";
-        }
-        else
-        {
-            archivo << tiempo_total <<  " segundos " << "\n";
-        }
-    }
     imwrite("filtradacolor" + nombre, imagen);
+}
+
+//*****Procedimiento que lee la imagen******
+Mat lectura_imagen(String nombre_imagen)
+{
+    // Lectura de la imagen
+    Mat imagen = imread(nombre_imagen, 1);
+
+    // Manejo de error en caso de que no sea encontrada la imagen
+    if (imagen.empty())
+    {
+        cout << "Archivo de imagen "
+             << "No encontrado" << endl;
+        cin.get();
+        return imagen;
+    }
+    return imagen;
 }

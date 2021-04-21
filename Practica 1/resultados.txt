@@ -1,32 +1,153 @@
-Tiempo de ejecucion para aplicación sobre sunflower.jpg
-0.458553 segundos 
-0.462612 segundos 
-0.44676 segundos 
-0.44316 segundos 
-0.457177 segundos 
-0.442586 segundos 
-0.465107 segundos 
-0.448608 segundos 
-0.463133 segundos 
-0.453177 segundos 
-0.448073 segundos 
-0.441994 segundos 
-0.446932 segundos 
-0.442333 segundos 
-0.453619 segundos 
-Tiempo de ejecucion para aplicación sobre figuras.jpg
-0.005054 segundos 
-0.005039 segundos 
-0.00503 segundos 
-0.005024 segundos 
-0.005028 segundos 
-0.005023 segundos 
-0.005026 segundos 
-0.005056 segundos 
-0.00504 segundos 
-0.005045 segundos 
-0.005034 segundos 
-0.005017 segundos 
-0.005001 segundos 
-0.00497 segundos 
-0.004915 segundos 
+Imagen landscape.jpg
+832
+825
+827
+824
+846
+830
+838
+838
+817
+833
+829
+831
+845
+831
+824
+826
+Imagen sunflower.jpg
+874
+863
+874
+877
+878
+873
+885
+865
+919
+887
+875
+869
+875
+874
+875
+884
+Imagen minions-3.jpg
+27
+31
+28
+28
+25
+27
+25
+27
+28
+25
+26
+27
+28
+26
+28
+28
+Imagen landscape.jpg
+820
+830
+842
+846
+827
+834
+842
+847
+846
+832
+834
+857
+825
+822
+821
+824
+Imagen sunflower.jpg
+871
+917
+869
+853
+926
+885
+856
+876
+860
+846
+881
+859
+889
+868
+860
+857
+Imagen minions-3.jpg
+26
+27
+27
+28
+30
+31
+29
+29
+26
+27
+26
+26
+26
+25
+27
+30
+Imagen landscape.jpg
+837
+841
+830
+825
+828
+849
+832
+833
+846
+843
+827
+824
+837
+846
+843
+851
+Imagen sunflower.jpg
+879
+911
+867
+898
+907
+883
+869
+889
+902
+876
+872
+879
+863
+875
+887
+880
+Imagen minions-3.jpg
+27
+26
+27
+27
+25
+28
+27
+25
+27
+29
+26
+27
+30
+27
+25
+26
