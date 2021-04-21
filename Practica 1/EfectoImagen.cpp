@@ -23,18 +23,16 @@ typedef struct
 Mat lectura_imagen(String nombre_imagen);
 void *aplicar_filtro(void *arg);
 void iniciar_filtro(String nombre, int hilos);
+bool filtro(int rojo, int verde, int azul, int filtro_a_aplicar);
 ofstream archivo;
 
 //definicion global del filtro a utilizar
-int filtro_a_aplicar = -1;
 
 int main(int argc, char **argv)
 {
     iniciar_filtro(argv[1], atoi(argv[2]));
     ////// COLOCAR ARGUMENTO 3 /////
     //filtro_a_aplicar = argv[3]
-    filtro_a_aplicar = 1;
-    waitKey(0);
     return 0;
 }
 
@@ -68,8 +66,8 @@ void *aplicar_filtro(void *arg)
             int verde = (int)color.val[1];
             int rojo = (int)color.val[2];
             int promedio = (int)((azul + verde + rojo) / 3);
-
-            if (filtro(rojo,verde,azul))
+		
+            if (filtro(rojo,verde,azul,2))
             {
                 color.val[0] = azul;
                 color.val[1] = verde;
@@ -87,7 +85,7 @@ void *aplicar_filtro(void *arg)
     return 0;
 }
 
-bool filtro(int rojo, int verde, int azul){
+bool filtro(int rojo, int verde, int azul, int filtro_a_aplicar){
     
     switch (filtro_a_aplicar) {
         //FILTRO AMARILLO
@@ -103,8 +101,6 @@ bool filtro(int rojo, int verde, int azul){
         }
         break;
     default: 
-        cout<<"ERROR, filtro no encontrado";
-        exit (EXIT_FAILURE);
         break;
     }
     return false;
