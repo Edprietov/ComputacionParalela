@@ -22,12 +22,18 @@ typedef struct
 //Prototipos de funciones
 Mat lectura_imagen(String nombre_imagen);
 void *aplicar_filtro(void *arg);
-void filtro_amarillo(String nombre, int hilos);
+void iniciar_filtro(String nombre, int hilos);
 ofstream archivo;
+
+//definicion global del filtro a utilizar
+int filtro_a_aplicar = -1;
 
 int main(int argc, char **argv)
 {
-    filtro_amarillo(argv[1], atoi(argv[2]));
+    iniciar_filtro(argv[1], atoi(argv[2]));
+    ////// COLOCAR ARGUMENTO 3 /////
+    //filtro_a_aplicar = argv[3]
+    filtro_a_aplicar = 1;
     waitKey(0);
     return 0;
 }
@@ -63,7 +69,7 @@ void *aplicar_filtro(void *arg)
             int rojo = (int)color.val[2];
             int promedio = (int)((azul + verde + rojo) / 3);
 
-            if (rojo > 200 && verde > 100 && azul < 85)
+            if (filtro(rojo,verde,azul))
             {
                 color.val[0] = azul;
                 color.val[1] = verde;
@@ -71,9 +77,9 @@ void *aplicar_filtro(void *arg)
             }
             else
             {
-                color.val[0] = 255;
-                color.val[1] = 255;
-                color.val[2] = 255;
+                color.val[0] = promedio;
+                color.val[1] = promedio;
+                color.val[2] = promedio;
             }
             (*(info.imagen)).at<Vec3b>(y, x) = color;
         }
@@ -81,8 +87,31 @@ void *aplicar_filtro(void *arg)
     return 0;
 }
 
+bool filtro(int rojo, int verde, int azul){
+    
+    switch (filtro_a_aplicar) {
+        //FILTRO AMARILLO
+    case 1:
+        if (rojo > 180 && verde > 100 && azul < 90){
+            return true;
+        }
+        break;
+        //FILTRO AZUL
+    case 2:
+        if (rojo < 90 && verde > 100 && azul > 180){
+            return true;
+        }
+        break;
+    default: 
+        cout<<"ERROR, filtro no encontrado";
+        exit (EXIT_FAILURE);
+        break;
+    }
+    return false;
+}
+
 //***filtro2*****
-void filtro_amarillo(String nombre, int hilos)
+void iniciar_filtro(String nombre, int hilos)
 {
     int pixel = 0;
     short veces = 0;

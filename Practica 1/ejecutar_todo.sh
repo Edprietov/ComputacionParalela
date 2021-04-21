@@ -1,5 +1,5 @@
 echo Ejecutando todo
-for imagen in minions-3.jpg landscape.jpg sunflower.jpg 
+for imagen in landscape.jpg sunflower.jpg flowers1k.jpg landscape720.jpg
 do
 cmake .
 make 
