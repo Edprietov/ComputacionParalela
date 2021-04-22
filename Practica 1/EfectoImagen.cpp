@@ -16,13 +16,16 @@ typedef struct
     int col;
     int row;
     int numHilo;
+    int num_filtro;
     Mat *imagen;
 } argumentosHilo;
+
+
 
 //Prototipos de funciones
 Mat lectura_imagen(String nombre_imagen);
 void *aplicar_filtro(void *arg);
-void iniciar_filtro(String nombre, int hilos);
+void iniciar_filtro(String nombre, int  numfiltro, int hilos);
 bool filtro(int rojo, int verde, int azul, int filtro_a_aplicar);
 ofstream archivo;
 
@@ -30,7 +33,8 @@ ofstream archivo;
 
 int main(int argc, char **argv)
 {
-    iniciar_filtro(argv[1], atoi(argv[2]));
+    //orden argumentos nombre, numero filtro, numero hilos
+    iniciar_filtro(argv[1], atoi(argv[2]), atoi(argv[3]));
     ////// COLOCAR ARGUMENTO 3 /////
     //filtro_a_aplicar = argv[3]
     return 0;
@@ -43,7 +47,7 @@ void *aplicar_filtro(void *arg)
     argumentosHilo info = *(argumentosHilo *)arg;
 
     // Datos necesarios para balanceo de carga Blockwise
-    int inicio, fin, espacio, idHilo = info.idHilo, row = info.row, col = info.col, numHilos = info.numHilo;
+    int inicio, fin, espacio, idHilo = info.idHilo, row = info.row, col = info.col, numHilos = info.numHilo, numfiltro = info.num_filtro;
     espacio = col / numHilos;
     inicio = idHilo * espacio;
 
@@ -66,8 +70,8 @@ void *aplicar_filtro(void *arg)
             int verde = (int)color.val[1];
             int rojo = (int)color.val[2];
             int promedio = (int)((azul + verde + rojo) / 3);
-		
-            if (filtro(rojo,verde,azul,2))
+
+            if (filtro(rojo, verde, azul, numfiltro))
             {
                 color.val[0] = azul;
                 color.val[1] = verde;
@@ -85,29 +89,40 @@ void *aplicar_filtro(void *arg)
     return 0;
 }
 
-bool filtro(int rojo, int verde, int azul, int filtro_a_aplicar){
-    
-    switch (filtro_a_aplicar) {
+bool filtro(int rojo, int verde, int azul, int filtro_a_aplicar)
+{
+
+    switch (filtro_a_aplicar)
+    {
         //FILTRO AMARILLO
     case 1:
-        if (rojo > 180 && verde > 100 && azul < 90){
+        if (rojo > 200 && verde >  100 && azul < 85)
+        {
             return true;
         }
         break;
         //FILTRO AZUL
     case 2:
-        if (rojo < 90 && verde > 100 && azul > 180){
+        if (rojo <  80 && verde > 130 && azul > 170)
+        {
             return true;
         }
         break;
-    default: 
+        //FILTRO VERDE
+    case 3:
+        if (rojo <  91 && verde > 159 && azul < 91)
+        {
+            return true;
+        }
+        break;
+    default:
         break;
     }
     return false;
 }
 
 //***filtro2*****
-void iniciar_filtro(String nombre, int hilos)
+void iniciar_filtro(String nombre, int numfiltro, int hilos)
 {
     int pixel = 0;
     short veces = 0;
@@ -125,6 +140,7 @@ void iniciar_filtro(String nombre, int hilos)
         (*(argumentos + i)).numHilo = hilos;
         (*(argumentos + i)).row = imagen.rows;
         (*(argumentos + i)).idHilo = i;
+        (*(argumentos + i)).num_filtro = numfiltro;
 
         int k = pthread_create(&thread[i], NULL, &aplicar_filtro, (argumentos + i));
     }
@@ -134,8 +150,9 @@ void iniciar_filtro(String nombre, int hilos)
         pthread_join(thread[i], (void **)&retval);
     }
     if (hilos == 16)
-    {
-        imwrite("filtradacolor" + nombre, imagen);
+    {   
+        String nombre_archivo = "filtradacolor_filtro" + to_string(numfiltro) + "nombre " + nombre;
+        imwrite(nombre_archivo, imagen);
     }
 }
 /*****Procedimiento que lee la imagen******/
