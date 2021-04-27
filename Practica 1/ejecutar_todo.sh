@@ -1,5 +1,7 @@
 echo Ejecutando todo
-for imagen in landscape.jpg sunflower.jpg flowers1k.jpg landscape720.jpg
+mkdir Resultados
+#for imagen in landscape.jpg sunflower.jpg flowers1k.jpg landscape720.jpg
+for imagen in landscape720.jpg
 do
 cmake .
 make 
@@ -22,7 +24,10 @@ done
 done
 done
 done
+mv resultados.txt Resultados
 rm Makefile
 rm cmake_install.cmake
 rm EfectoImagen
 rm CMakeCache.txt
+rm -r CMakeFiles
+rm -r -I Resultados

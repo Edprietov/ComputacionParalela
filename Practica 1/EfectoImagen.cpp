@@ -151,7 +151,7 @@ void iniciar_filtro(String nombre, int numfiltro, int hilos)
     }
     if (hilos == 16)
     {   
-        String nombre_archivo = "filtradacolor_filtro" + to_string(numfiltro) + "nombre " + nombre;
+        String nombre_archivo = "./Resultados/filtro" + to_string(numfiltro) + "__nombre_ " + nombre;
         imwrite(nombre_archivo, imagen);
     }
 }
@@ -159,7 +159,7 @@ void iniciar_filtro(String nombre, int numfiltro, int hilos)
 Mat lectura_imagen(String nombre_imagen)
 {
     // Lectura de la imagen
-    Mat imagen = imread(nombre_imagen, 1);
+    Mat imagen = imread("./Assets/"+nombre_imagen, 1);
 
     // Manejo de error en caso de que no sea encontrada la imagen
     if (imagen.empty())

@@ -68,8 +68,9 @@ void *inicializar(String nombre)
     imwrite("Inicial" + nombre, imagen);
     for (int k = 0; k < 200; k++){
         imagen = iterar(imagen);
+        imwrite("Final" + nombre, imagen);
     }
-    imwrite("Final" + nombre, imagen);
+    
     return 0;
 }
 

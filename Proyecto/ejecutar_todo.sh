@@ -4,6 +4,7 @@ do
 cmake .
 make 
 ./life $imagen
+rm -i Inicial$imagen Final$imagen
 done
 rm Makefile
 rm cmake_install.cmake
