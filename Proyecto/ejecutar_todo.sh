@@ -1,9 +1,24 @@
 echo Ejecutando todo
-for imagen in 400x400.png
-do
 cmake .
 make 
-./life $imagen
+mkdir Resultado
+for imagen in 400x400.png
+do
+for h in 1 2 4 8 16
+do
+echo $h hilos
+echo $h hilos >> resultados.txt
+for j in $(seq 0 15)
+do
+d1=$(date "+%s%N")/1000000
+TIMEFORMAT=%R
+time ./life $imagen $h
+d2=$(date "+%s%N")/1000000
+echo $(($d2 - $d1)) >> resultados.txt
+done
+done
+mv resultados.txt Resultados
+rm -r -I Resultados
 rm -i Inicial$imagen Final$imagen
 done
 rm Makefile
