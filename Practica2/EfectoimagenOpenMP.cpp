@@ -68,11 +68,6 @@ void iniciar_filtro(String nombre, int numfiltro, int hilos)
     short veces = 0;
     Mat imagen = lectura_imagen(nombre);
 
-    Mat  imagenes[hilos][10];
-    for(int k=0; k<hilos; k++){
-        imagenes[k][0] =  (lectura_imagen(nombre));
-    }
-
     int cols = imagen.cols;
     int rows = imagen.rows;
     int espacio = cols / hilos;
