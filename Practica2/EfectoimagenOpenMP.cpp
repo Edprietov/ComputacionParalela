@@ -68,6 +68,11 @@ void iniciar_filtro(String nombre, int numfiltro, int hilos)
     short veces = 0;
     Mat imagen = lectura_imagen(nombre);
 
+    Mat imagenes[hilos][10];
+    for(int k=0; k<hilos; k++){
+        imagenes[k][0] = lectura_imagen(nombre);
+    }
+
     int cols = imagen.cols;
     int rows = imagen.rows;
     int espacio = cols / hilos;
@@ -100,9 +105,9 @@ void iniciar_filtro(String nombre, int numfiltro, int hilos)
             // Aplicacion del filtro sobre la imagen
         for (int y = 0; y < rows; y++)
         {
-            for (int x = inicio; x < fin; x++)
+            for (int x = 0; x < cols; x++)
             {
-                Vec3b color = imagen.at<Vec3b>(y, x);
+                Vec3b color = imagenes[id][0].at<Vec3b>(y, x);
                 int azul = (int)color.val[0];
                 int verde = (int)color.val[1];
                 int rojo = (int)color.val[2];
@@ -120,7 +125,7 @@ void iniciar_filtro(String nombre, int numfiltro, int hilos)
                     color.val[1] = promedio;
                     color.val[2] = promedio;
                 }
-                imagen.at<Vec3b>(y, x) = color;
+                imagenes[id][0].at<Vec3b>(y, x) = color;
             }
         }
     }
@@ -128,6 +133,8 @@ void iniciar_filtro(String nombre, int numfiltro, int hilos)
    
     if (hilos == 16)
     {   
+        cv::Rect myROI(10, 10, 100, 100);
+        cv::Mat croppedImage = imagen(myROI);
         String nombre_archivo = "./Resultados/filtro" + to_string(numfiltro) + "__nombre_ " + nombre;
         imwrite(nombre_archivo, imagen);
     }
