@@ -132,7 +132,7 @@ Mat iterar(Mat imagen, int hilos){
     // Zona paralelizable
      for (int i = 1; i < imagen.rows-1; i++){ // preguntar
          for (int j = inicio; j < fin; j++){
-             Vec3b color = imagen.at<Vec3b>(i, j);
+             Vec3b color = * (& (imagen.at<Vec3b>(i, j)));
              int azul = (int)color.val[0];
              if (azul == muerte && auxMatriz[i][j] == 3){
                  color.val[0] = vida;
@@ -143,7 +143,7 @@ Mat iterar(Mat imagen, int hilos){
                  color.val[1] = muerte;
                  color.val[2] = muerte;
              }
-             imagen.at<Vec3b>(i, j) = color;
+             * (& (imagen.at<Vec3b>(i, j))) = color;
          }
      }
 
