@@ -68,17 +68,14 @@ void iniciar_filtro(String nombre, int numfiltro, int hilos)
     short veces = 0;
     Mat imagen = lectura_imagen(nombre);
 
-    Mat imagenes[hilos][10];
+    Mat  imagenes[hilos][10];
     for(int k=0; k<hilos; k++){
-        imagenes[k][0] = lectura_imagen(nombre);
+        imagenes[k][0] =  (lectura_imagen(nombre));
     }
 
     int cols = imagen.cols;
     int rows = imagen.rows;
     int espacio = cols / hilos;
-    printf("cols: %i \n", cols);
-    printf("rows: %i \n", rows);
-    printf("espacio: %i \n", espacio);
 
     
 
@@ -87,7 +84,6 @@ void iniciar_filtro(String nombre, int numfiltro, int hilos)
     #pragma omp parallel 
     {
         int id = omp_get_thread_num();
-        printf("id: %i \n", id);
         int nthreads = hilos;
         int inicio = id * espacio;
         int fin;
@@ -107,7 +103,7 @@ void iniciar_filtro(String nombre, int numfiltro, int hilos)
         {
             for (int x = 0; x < cols; x++)
             {
-                Vec3b color = imagenes[id][0].at<Vec3b>(y, x);
+                Vec3b color = *(& (imagen.at<Vec3b>(y, x)));
                 int azul = (int)color.val[0];
                 int verde = (int)color.val[1];
                 int rojo = (int)color.val[2];
@@ -125,7 +121,7 @@ void iniciar_filtro(String nombre, int numfiltro, int hilos)
                     color.val[1] = promedio;
                     color.val[2] = promedio;
                 }
-                imagenes[id][0].at<Vec3b>(y, x) = color;
+                *(& (imagen.at<Vec3b>(y, x))) = color;
             }
         }
     }
