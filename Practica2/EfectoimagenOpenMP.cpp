@@ -96,7 +96,7 @@ void iniciar_filtro(String nombre, int numfiltro, int hilos)
             // Aplicacion del filtro sobre la imagen
         for (int y = 0; y < rows; y++)
         {
-            for (int x = 0; x < cols; x++)
+            for (int x = inicio; x < fin; x++)
             {
                 Vec3b color = *(& (imagen.at<Vec3b>(y, x)));
                 int azul = (int)color.val[0];
