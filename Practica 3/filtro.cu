@@ -10,7 +10,39 @@ using namespace std;
 using namespace cv;
 
 //Filtro que se aplica.
-__device__ int filtro(const int *imagen, int x, int y, int alto)
+__device__ bool aplicar_filtro(int rojo, int verde, int azul, int filtro_a_aplicar)
+{
+
+	switch (filtro_a_aplicar)
+	{
+		//FILTRO AMARILLO
+	case 1:
+		if (rojo > 200 && verde > 100 && azul < 85)
+		{
+			return true;
+		}
+		break;
+		//FILTRO AZUL
+	case 2:
+		if (rojo < 80 && verde > 130 && azul > 170)
+		{
+			return true;
+		}
+		break;
+		//FILTRO VERDE
+	case 3:
+		if (rojo < 91 && verde > 159 && azul < 91)
+		{
+			return true;
+		}
+		break;
+	default:
+		break;
+	}
+	return false;
+}
+
+__device__ int filtro(const int *imagen, int x, int y, int alto, int num_filtro)
 {
 
 	int n = imagen[y + x * alto];
@@ -19,14 +51,17 @@ __device__ int filtro(const int *imagen, int x, int y, int alto)
 	verde += (n / 1000) % 1000;
 	rojo += (n / 1000000) % 1000;
 	promedio = ((azul + verde + rojo) / 3);
-	azul = promedio;
-	verde = promedio;
-	rojo = promedio;
+	if (!aplicar_filtro(rojo, verde, azul, num_filtro))
+	{
+		azul = promedio;
+		verde = promedio;
+		rojo = promedio;
+	}
 	return (rojo * 1000000) + (verde * 1000) + azul;
 }
 
 //Función que ejecuta cada hilo.
-__global__ void hilo_filtro(const int *d_imagen_rgb, const int ancho, const int alto, const int total_hilos, int *d_imagen_filtrada)
+__global__ void hilo_filtro(const int *d_imagen_rgb, const int ancho, const int alto, const int total_hilos, int *d_imagen_filtrada, int num_filtro)
 {
 
 	int id = blockDim.x * blockIdx.x + threadIdx.x;
@@ -38,7 +73,7 @@ __global__ void hilo_filtro(const int *d_imagen_rgb, const int ancho, const int 
 		{
 			for (int j = fila_inicial; j < fila_final; j++)
 			{
-				d_imagen_filtrada[j + i * alto] = filtro(d_imagen_rgb, i, j, alto);
+				d_imagen_filtrada[j + i * alto] = filtro(d_imagen_rgb, i, j, alto, num_filtro);
 			}
 		}
 	}
@@ -53,13 +88,15 @@ int main(int argc, char **argv)
 	//Variables.
 	char *nombre_imagen;
 	Mat imagen, imagen_filtrada;
-	int num_hilos, num_bloques;
+	int num_hilos, num_bloques, num_filtro, iteracion;
 
 	//Recibir argumentos.
 	nombre_imagen = argv[1];
 	num_hilos = atoi(argv[2]);
+	num_filtro = atoi(argv[3]);
+	iteracion = atoi(argv[4]);
 
-	if (argc != 3)
+	if (argc != 5)
 	{
 		cout << "Numero incorrecto de argumentos.\n";
 		return -1;
@@ -120,8 +157,8 @@ int main(int argc, char **argv)
 	}
 
 	//Lanzar kernel GPU
-    num_bloques = (alto + num_hilos - 1) / num_hilos;
-	hilo_filtro<<<num_bloques, num_hilos>>>(d_imagen_rgb, ancho, alto, alto, d_imagen_filtrada);
+	num_bloques = (alto + num_hilos - 1) / num_hilos;
+	hilo_filtro<<<num_bloques, num_hilos>>>(d_imagen_rgb, ancho, alto, alto, d_imagen_filtrada, num_filtro);
 	err = cudaGetLastError();
 	if (err != cudaSuccess)
 	{
@@ -130,7 +167,6 @@ int main(int argc, char **argv)
 	}
 
 	//Copiar de GPU a CPU
-	cout << "Copiando datos desde la GPU a CPU." << endl;
 	err = cudaMemcpy(h_imagen_filtrada, d_imagen_filtrada, size, cudaMemcpyDeviceToHost);
 	if (err != cudaSuccess)
 	{
@@ -150,9 +186,12 @@ int main(int argc, char **argv)
 			aux++;
 		}
 	}
-	//String nombre_archivo = "./Resultados/filtro" + to_string(numfiltro) + "__nombre_ " + nombre;
-	String nombre_archivo = "./Resultados/filtrada_";
-	imwrite(nombre_archivo += nombre_imagen, imagen_filtrada);
+
+	if (num_hilos == 1024 && iteracion == 15)
+	{
+		String nombre_archivo = "./Resultados/filtro_" + to_string(num_filtro) + "_";
+		imwrite(nombre_archivo += nombre_imagen, imagen_filtrada);
+	}
 
 	//Liberar espacio
 	err = cudaFree(d_imagen_rgb);
@@ -177,16 +216,16 @@ int main(int argc, char **argv)
 /*****Procedimiento que lee la imagen******/
 Mat lectura_imagen(String nombre_imagen)
 {
-    // Lectura de la imagen
-    Mat imagen = imread("./Assets/"+nombre_imagen, 1);
+	// Lectura de la imagen
+	Mat imagen = imread("./Assets/" + nombre_imagen, 1);
 
-    // Manejo de error en caso de que no sea encontrada la imagen
-    if (imagen.empty())
-    {
-        cout << "Archivo de imagen "
-             << "No encontrado" << endl;
-        cin.get();
-        return imagen;
-    }
-    return imagen;
+	// Manejo de error en caso de que no sea encontrada la imagen
+	if (imagen.empty())
+	{
+		cout << "Archivo de imagen "
+			 << "No encontrado" << endl;
+		cin.get();
+		return imagen;
+	}
+	return imagen;
 }
