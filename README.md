@@ -12,4 +12,12 @@
 
 
 
+### PRÁCTICAS
+
+- Práctica 1 -> Usando hilos POSIX
+- Práctica 2 -> Usando hilos OpenMP
+- Práctica 3 -> Usando hilos CUDA
+
+
+
  

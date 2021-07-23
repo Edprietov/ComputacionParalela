@@ -8,7 +8,7 @@ Se deben ejecutar los siguientes comandos:
 > 
 > make
 > 
-> ./EfectoImagen "Nombre de la imagen a la que se le quiere aplicar el filtro" 
+> ./EfectoImagen "Nombre de la imagen a la que se le quiere aplicar el filtro"  "Número de hilos"
 >
 > 
 

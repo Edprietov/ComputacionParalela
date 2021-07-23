@@ -49,17 +49,10 @@ void filtro_amarillo(String nombre)
                 int rojo = (int)color.val[2];
                 int promedio = (int)((azul + verde + rojo) / 3);
 
-                if( rojo > 200 && verde > 100 && azul < 85  ){
-                color.val[0] = azul;
-                color.val[1] = verde;
-                color.val[2] = rojo;
-                }
-                else{
-                color.val[0] = 255;
-                color.val[1] = 255;
-                color.val[2] = 255;
-                }
-                
+                color.val[0] = promedio;
+                color.val[1] = promedio;
+                color.val[2] = promedio;
+             
                 imagen.at<Vec3b>(y, x) = color;
             }
         }
