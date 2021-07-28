@@ -42,10 +42,10 @@ __device__ bool aplicar_filtro(int rojo, int verde, int azul, int filtro_a_aplic
 	return false;
 }
 
-__device__ int filtro(const int *imagen, int x, int y, int alto, int num_filtro)
+__device__ int filtro(const int *imagen, int x, int cantidad, int id, int num_filtro)
 {
 
-	int n = imagen[y + x * alto];
+	int n = imagen[(id * cantidad) + x];
 	int rojo = 0, verde = 0, azul = 0, promedio = 0;
 	azul += (n % 1000);
 	verde += (n / 1000) % 1000;
@@ -63,19 +63,15 @@ __device__ int filtro(const int *imagen, int x, int y, int alto, int num_filtro)
 //Función que ejecuta cada hilo.
 __global__ void hilo_filtro(const int *d_imagen_rgb, const int ancho, const int alto, const int total_hilos, int *d_imagen_filtrada, int num_filtro)
 {
+	//Se calcula cuantas posiciones tomara cada hilo
+	int cantidad = (alto * ancho) / (gridDim.x * blockDim.x);
 
 	int id = blockDim.x * blockIdx.x + threadIdx.x;
-	int fila_inicial = id * (alto / total_hilos);
-	int fila_final = (id + 1) * (alto / total_hilos);
-	if (id < alto)
-	{
-		for (int i = 0; i < ancho; i++)
-		{
-			for (int j = fila_inicial; j < fila_final; j++)
-			{
-				d_imagen_filtrada[j + i * alto] = filtro(d_imagen_rgb, i, j, alto, num_filtro);
-			}
-		}
+	//printf("Hilo %u desde %u hasta %u \n", id, id*cantidad, (cantidad*id) + cantidad);
+
+	for (int i = 0; i < cantidad; i++)
+	{ //printf("Hilo %u - en la posicion %u\n", id,((id * cantidad) + i));
+		d_imagen_filtrada[(id * cantidad) + i] = filtro(d_imagen_rgb, i, cantidad, id, num_filtro);
 	}
 }
 
@@ -83,8 +79,8 @@ __global__ void hilo_filtro(const int *d_imagen_rgb, const int ancho, const int 
 Mat lectura_imagen(String nombre_imagen);
 
 int main(int argc, char **argv)
-{
 
+{
 	//Variables.
 	char *nombre_imagen;
 	Mat imagen, imagen_filtrada;
@@ -94,9 +90,10 @@ int main(int argc, char **argv)
 	nombre_imagen = argv[1];
 	num_hilos = atoi(argv[2]);
 	num_filtro = atoi(argv[3]);
-	iteracion = atoi(argv[4]);
+	num_bloques = atoi(argv[4]);
+	iteracion = atoi(argv[5]);
 
-	if (argc != 5)
+	if (argc != 6)
 	{
 		cout << "Numero incorrecto de argumentos.\n";
 		return -1;
@@ -157,7 +154,6 @@ int main(int argc, char **argv)
 	}
 
 	//Lanzar kernel GPU
-	num_bloques = (alto + num_hilos - 1) / num_hilos;
 	hilo_filtro<<<num_bloques, num_hilos>>>(d_imagen_rgb, ancho, alto, alto, d_imagen_filtrada, num_filtro);
 	err = cudaGetLastError();
 	if (err != cudaSuccess)
@@ -187,11 +183,9 @@ int main(int argc, char **argv)
 		}
 	}
 
-	if (num_hilos == 1024 && iteracion == 15)
-	{
-		String nombre_archivo = "./Resultados/filtro_" + to_string(num_filtro) + "_";
-		imwrite(nombre_archivo += nombre_imagen, imagen_filtrada);
-	}
+	//Para guardar la imagen y verificar que el algoritmo hace lo que debe hacer
+	/*String nombre_archivo = "./Resultados/filtro_" + to_string(num_filtro) + "_"+ to_string(num_bloques) + "_bloques_";
+		imwrite(nombre_archivo += nombre_imagen, imagen_filtrada);*/
 
 	//Liberar espacio
 	err = cudaFree(d_imagen_rgb);
