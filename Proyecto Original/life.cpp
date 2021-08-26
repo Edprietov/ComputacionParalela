@@ -33,40 +33,9 @@ void *inicializar(String nombre)
 {
     Mat imagen = lectura_imagen(nombre);
 
-    for (int i = 0; i < imagen.rows; i++){
-        for (int j = 0; j < imagen.cols; j++){
-            Vec3b color = imagen.at<Vec3b>(i, j);
-            color.val[0] = muerte;
-            color.val[1] = muerte;
-            color.val[2] = muerte;
-            imagen.at<Vec3b>(i, j) = color;
-        }
-    }
-    /* PRUEBA INICIAL CON UN PATRON DEFINIDO*/
-    Vec3b color = imagen.at<Vec3b>(200+0, 200+0);
-    color.val[0] = vida;
-    color.val[1] = vida;
-    color.val[2] = vida;
-    imagen.at<Vec3b>(200+0, 200+0) = color;
-    imagen.at<Vec3b>(200+1, 200+0) = color;
-    imagen.at<Vec3b>(200+4, 200+0) = color;
-
-    imagen.at<Vec3b>(200+0, 200+1) = color;
-    imagen.at<Vec3b>(200+3, 200+1) = color;
-
-    imagen.at<Vec3b>(200+0, 200+2) = color;
-    imagen.at<Vec3b>(200+3, 200+2) = color;
-    imagen.at<Vec3b>(200+4, 200+2) = color;
-
-    imagen.at<Vec3b>(200+2, 200+3) = color;
-
-    imagen.at<Vec3b>(200+0, 200+4) = color;
-    imagen.at<Vec3b>(200+2, 200+4) = color;
-    imagen.at<Vec3b>(200+3, 200+4) = color;
-    imagen.at<Vec3b>(200+4, 200+4) = color;
-
     imwrite("Inicial" + nombre, imagen);
     for (int k = 0; k < 200; k++){
+        //cout<<k<<endl;
         imagen = iterar(imagen);
         imwrite("Final" + nombre, imagen);
     }
