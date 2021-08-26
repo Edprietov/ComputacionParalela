@@ -9,5 +9,5 @@ if (OPENMP_FOUND)
 endif()
 
 include_directories( ${OpenCV_INCLUDE_DIRS} )
-add_executable( life lifeOpenMP.cpp )
-target_link_libraries( life ${OpenCV_LIBS} ${OpenMP_CXX_FLAGS})
+add_executable( life lifeMp.cpp )
+target_link_libraries( life ${OpenCV_LIBS}  ${OpenMP_CXX_FLAGS})

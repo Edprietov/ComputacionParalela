@@ -5,15 +5,16 @@
 #include <fstream>
 #include <sys/time.h>
 #include <unistd.h>
+#include <omp.h>
 
 using namespace cv;
 using namespace std;
 
 /* Prototipos de funciones */
-void *inicializar(String nombre);
+void *inicializar(String nombre, int hilos);
 int calcularVecino(Mat imagen, int i, int j);
 Mat lectura_imagen(String nombre_imagen);
-Mat iterar(Mat imagen);
+Mat iterar(Mat imagen, int hilos);
 ofstream archivo;
 
 /* definicion global del filtro a utilizar */
@@ -23,17 +24,18 @@ ofstream archivo;
 
 int main(int argc, char **argv)
 {
-    /* orden argumentos nombre, numero filtro, numero hilos */
-    inicializar(argv[1]);
+    /* orden a  rgumentos nombre, numero filtro, numero hilos */
+    inicializar(argv[1], atoi(argv[2]));
+    //printf("HILOS # %i\n", atoi(argv[2]));
     return 0;
     
 }
 
-void *inicializar(String nombre)
+void *inicializar(String nombre, int hilo)
 {
     Mat imagen = lectura_imagen(nombre);
 
-    for (int i = 0; i < imagen.rows; i++){
+     for (int i = 0; i < imagen.rows; i++){
         for (int j = 0; j < imagen.cols; j++){
             Vec3b color = imagen.at<Vec3b>(i, j);
             color.val[0] = muerte;
@@ -42,6 +44,7 @@ void *inicializar(String nombre)
             imagen.at<Vec3b>(i, j) = color;
         }
     }
+
     /* PRUEBA INICIAL CON UN PATRON DEFINIDO*/
     Vec3b color = imagen.at<Vec3b>(200+0, 200+0);
     color.val[0] = vida;
@@ -67,20 +70,20 @@ void *inicializar(String nombre)
 
     imwrite("Inicial" + nombre, imagen);
     for (int k = 0; k < 200; k++){
-        imagen = iterar(imagen);
+        imagen = iterar(imagen, hilo );
         imwrite("Final" + nombre, imagen);
     }
     
     return 0;
 }
 
-int calcularVecino(Mat imagen, int i, int j){
+int calcularVecino(Mat *imagen, int i, int j){
     int aux = 0;
             
     for (int k = i-1; k < i+2; k++){
         for (int l = j-1; l < j+2; l++){
             if (!(k == i && j == l)){
-                Vec3b color = (imagen).at<Vec3b>(k, l);
+                Vec3b color = (*(imagen)).at<Vec3b>(k, l);
                 int azul = (int)color.val[0];
                 if (azul == vida){
                     aux += 1;
@@ -91,14 +94,34 @@ int calcularVecino(Mat imagen, int i, int j){
     return aux;
 }
 
-Mat iterar(Mat imagen){
+Mat iterar(Mat imagen, int hilos){
     int auxMatriz[imagen.rows][imagen.cols];
 
-    for (int i = 1; i < imagen.rows-1; i++){
-        for (int j = 1; j < imagen.cols-1; j++){
-            auxMatriz[i][j] = calcularVecino(imagen, i,j);
+    int cols = imagen.cols - 1;
+    int rows = imagen.rows - 1;
+    int espacio = cols / hilos;
+    omp_set_num_threads(hilos);
+    #pragma omp parallel 
+    {
+        int id = omp_get_thread_num();
+
+        //printf("id: %i \n", id);
+        int nthreads = hilos;
+        int inicio =  (id == 0) ? 1 : id * espacio;
+        int fin = (id == hilos - 1) ? cols : inicio + espacio;
+        (id == 0) ? fin = espacio: fin = fin;
+
+        //printf("inicio: %i \n", inicio);
+        //printf("fin: %i \n\n", fin);
+
+        for (int i = 1; i < rows; i++){
+            for (int j = inicio; j < fin; j++){
+                 * (&auxMatriz[i][j]) = calcularVecino(&imagen, i,j);
+            }
         }
     }
+    
+
 /*
     for (int i = 0; i < 10; i++){
         for (int j = 0; j < 10; j++){
@@ -107,6 +130,8 @@ Mat iterar(Mat imagen){
         cout << endl;
     }
 */
+
+
     for (int i = 1; i < imagen.rows-1; i++){
         for (int j = 1; j < imagen.cols-1; j++){
             Vec3b color = imagen.at<Vec3b>(i, j);
@@ -123,6 +148,8 @@ Mat iterar(Mat imagen){
             imagen.at<Vec3b>(i, j) = color;
         }
     }
+    
+        
 
     return imagen;
 }
@@ -131,7 +158,7 @@ Mat iterar(Mat imagen){
 Mat lectura_imagen(String nombre_imagen)
 {
     /* Lectura de la imagen */
-    Mat imagen = imread(nombre_imagen, 1);
+    Mat imagen = imread("./../Assets/"+nombre_imagen, 1);
 
     /* Manejo de error en caso de que no sea encontrada la imagen */
     if (imagen.empty())
