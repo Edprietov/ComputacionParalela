@@ -1,7 +1,6 @@
 echo Ejecutando todo
 mkdir Resultados
-#for imagen in landscape.jpg sunflower.jpg flowers1k.jpg landscape720.jpg
-for imagen in flowers1k.jpg
+for imagen in sunflower.jpg imagen720.jpg imagen1080.jgp
 do
 cmake .
 make 
@@ -9,7 +8,7 @@ echo "Imagen" $imagen
 echo "Imagen" $imagen >> resultados.txt
 for h in 64 128 256 512 1024
 do
-for filtro in 1 2 3
+for filtro in 1
 do
 echo $h hilos $filtro filtro
 echo $h hilos $filtro filtro >> resultados.txt 
