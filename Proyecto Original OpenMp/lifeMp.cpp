@@ -24,7 +24,7 @@ ofstream archivo;
 
 int main(int argc, char **argv)
 {
-    /* orden argumentos nombre, numero filtro, numero hilos */
+    /* orden a  rgumentos nombre, numero filtro, numero hilos */
     inicializar(argv[1], atoi(argv[2]));
     //printf("HILOS # %i\n", atoi(argv[2]));
     return 0;
@@ -35,7 +35,7 @@ void *inicializar(String nombre, int hilo)
 {
     Mat imagen = lectura_imagen(nombre);
 
-    for (int i = 0; i < imagen.rows; i++){
+     for (int i = 0; i < imagen.rows; i++){
         for (int j = 0; j < imagen.cols; j++){
             Vec3b color = imagen.at<Vec3b>(i, j);
             color.val[0] = muerte;
@@ -44,6 +44,7 @@ void *inicializar(String nombre, int hilo)
             imagen.at<Vec3b>(i, j) = color;
         }
     }
+
     /* PRUEBA INICIAL CON UN PATRON DEFINIDO*/
     Vec3b color = imagen.at<Vec3b>(200+0, 200+0);
     color.val[0] = vida;
@@ -76,13 +77,13 @@ void *inicializar(String nombre, int hilo)
     return 0;
 }
 
-int calcularVecino(Mat imagen, int i, int j){
+int calcularVecino(Mat *imagen, int i, int j){
     int aux = 0;
             
     for (int k = i-1; k < i+2; k++){
         for (int l = j-1; l < j+2; l++){
             if (!(k == i && j == l)){
-                Vec3b color = (imagen).at<Vec3b>(k, l);
+                Vec3b color = (*(imagen)).at<Vec3b>(k, l);
                 int azul = (int)color.val[0];
                 if (azul == vida){
                     aux += 1;
@@ -95,20 +96,6 @@ int calcularVecino(Mat imagen, int i, int j){
 
 Mat iterar(Mat imagen, int hilos){
     int auxMatriz[imagen.rows][imagen.cols];
-
-    for (int i = 1; i < imagen.rows-1; i++){
-        for (int j = 1; j < imagen.cols-1; j++){
-            auxMatriz[i][j] = calcularVecino(imagen, i,j);
-        }
-    }
-/*
-    for (int i = 0; i < 10; i++){
-        for (int j = 0; j < 10; j++){
-            cout << auxMatriz[i][j] << " ";
-        }
-        cout << endl;
-    }
-*/
 
     int cols = imagen.cols - 1;
     int rows = imagen.rows - 1;
@@ -124,24 +111,44 @@ Mat iterar(Mat imagen, int hilos){
         int fin = (id == hilos - 1) ? cols : inicio + espacio;
         (id == 0) ? fin = espacio: fin = fin;
 
-        for (int i = 1; i < rows ; i++){
-            for (int j = inicio ; j < fin; j++){
-                Vec3b color = * ( &(imagen.at<Vec3b>(i, j)));
-                int azul = (int)color.val[0];
-                int valor = * (& (auxMatriz[i][j]));
-                if (azul == muerte && valor == 3){
-                    color.val[0] = vida;
-                    color.val[1] = vida;
-                    color.val[2] = vida;
-                }else if (azul == vida && (valor > 3 || valor < 2)){
-                    color.val[0] = muerte;
-                    color.val[1] = muerte;
-                    color.val[2] = muerte;
-                }
-                * ( &(imagen.at<Vec3b>(i, j))) = color;
+        //printf("inicio: %i \n", inicio);
+        //printf("fin: %i \n\n", fin);
+
+        for (int i = 1; i < rows; i++){
+            for (int j = inicio; j < fin; j++){
+                 * (&auxMatriz[i][j]) = calcularVecino(&imagen, i,j);
             }
         }
     }
+    
+
+/*
+    for (int i = 0; i < 10; i++){
+        for (int j = 0; j < 10; j++){
+            cout << auxMatriz[i][j] << " ";
+        }
+        cout << endl;
+    }
+*/
+
+
+    for (int i = 1; i < imagen.rows-1; i++){
+        for (int j = 1; j < imagen.cols-1; j++){
+            Vec3b color = imagen.at<Vec3b>(i, j);
+            int azul = (int)color.val[0];
+            if (azul == muerte && auxMatriz[i][j] == 3){
+                color.val[0] = vida;
+                color.val[1] = vida;
+                color.val[2] = vida;
+            }else if (azul == vida && (auxMatriz[i][j] > 3 || auxMatriz[i][j] < 2)){
+                color.val[0] = muerte;
+                color.val[1] = muerte;
+                color.val[2] = muerte;
+            }
+            imagen.at<Vec3b>(i, j) = color;
+        }
+    }
+    
         
 
     return imagen;
@@ -151,7 +158,7 @@ Mat iterar(Mat imagen, int hilos){
 Mat lectura_imagen(String nombre_imagen)
 {
     /* Lectura de la imagen */
-    Mat imagen = imread(nombre_imagen, 1);
+    Mat imagen = imread("./../Assets/"+nombre_imagen, 1);
 
     /* Manejo de error en caso de que no sea encontrada la imagen */
     if (imagen.empty())

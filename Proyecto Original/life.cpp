@@ -131,7 +131,7 @@ Mat iterar(Mat imagen){
 Mat lectura_imagen(String nombre_imagen)
 {
     /* Lectura de la imagen */
-    Mat imagen = imread(nombre_imagen, 1);
+    Mat imagen = imread("./../Assets/"+nombre_imagen, 1);
 
     /* Manejo de error en caso de que no sea encontrada la imagen */
     if (imagen.empty())
