@@ -93,7 +93,10 @@ void iniciar(String nombre, int numfiltro, int hilo, int total_hilos)
             {
                 MPI_Send(&imagen, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
             }
+            MPI_Bcast( &channels, 1, MPI_INT, 0, MPI_COMM_WORLD );
 
+             // synchronize the processes here, to make sure that the sizes are initialized:
+            MPI_Barrier( MPI_COMM_WORLD );
             cv::Rect myROI(10, 10, 100, 100);
             cv::Mat croppedImage = imagen(myROI);
             String nombre_archivo = "./Resultados/filtro" + to_string(numfiltro) + "__nombre_ " + nombre;
