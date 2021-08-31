@@ -24,13 +24,30 @@ int main(int argc, char *argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &proceso);
 
     //orden argumentos nombre, numero filtro, hilo ejecucion,numero hilos totales
-    iniciar_filtro(argv[1], 1, proceso, total_hilos);
+    iniciar(argv[1], 1, proceso, total_hilos);
 
     MPI_Finalize();
     return 0;
 }
 
-void iniciar_filtro(String nombre, int numfiltro, int hilo, int total_hilos)
+int calcularVecino(Mat *imagen, int i, int j){
+    int aux = 0;
+            
+    for (int k = i-1; k < i+2; k++){
+        for (int l = j-1; l < j+2; l++){
+            if (!(k == i && j == l)){
+                Vec3b color = (*(imagen)).at<Vec3b>(k, l);
+                int azul = (int)color.val[0];
+                if (azul == vida){
+                    aux += 1;
+                }
+            }
+        }   
+    }
+    return aux;
+}
+
+void iniciar(String nombre, int numfiltro, int hilo, int total_hilos)
 {
     MPI_Status status;
 
@@ -51,17 +68,17 @@ void iniciar_filtro(String nombre, int numfiltro, int hilo, int total_hilos)
                 int rojo = (int)color.val[2];
                 int promedio = (int)((azul + verde + rojo) / 3);
 
-                if (filtro(rojo, verde, azul, numfiltro))
+                if (calcularVecino(rojo, verde, azul, numfiltro))
                 {
-                    color.val[0] = azul;
-                    color.val[1] = verde;
-                    color.val[2] = rojo;
+                    color.val[0] = vida;
+                    color.val[1] = vida;
+                    color.val[2] = vida;
                 }
                 else
                 {
-                    color.val[0] = promedio;
-                    color.val[1] = promedio;
-                    color.val[2] = promedio;
+                    color.val[0] = muerte;
+                    color.val[1] = muerte;
+                    color.val[2] = muerte;
                 }
                 *(&(imagen.at<Vec3b>(y, x))) = color;
             }
@@ -93,64 +110,32 @@ void iniciar_filtro(String nombre, int numfiltro, int hilo, int total_hilos)
             cout << "wi"<< endl;
             cout << imagen.data <<endl;
             for (int y = 0; y < imagen.rows; y++)
+        {
+            for (int x = inicio; x < fin; x++)
             {
-                for (int x = inicio; x < fin; x++)
-                {
-                    Vec3b color = *(&(imagen.at<Vec3b>(y, x)));
-                    int azul = (int)color.val[0];
-                    int verde = (int)color.val[1];
-                    int rojo = (int)color.val[2];
-                    int promedio = (int)((azul + verde + rojo) / 3);
+                Vec3b color = *(&(imagen.at<Vec3b>(y, x)));
+                int azul = (int)color.val[0];
+                int verde = (int)color.val[1];
+                int rojo = (int)color.val[2];
+                int promedio = (int)((azul + verde + rojo) / 3);
 
-                    if (filtro(rojo, verde, azul, numfiltro))
-                    {
-                        color.val[0] = azul;
-                        color.val[1] = verde;
-                        color.val[2] = rojo;
-                    }
-                    else
-                    {
-                        color.val[0] = promedio;
-                        color.val[1] = promedio;
-                        color.val[2] = promedio;
-                    }
-                    *(&(imagen.at<Vec3b>(y, x))) = color;
+                if (calcularVecino(rojo, verde, azul, numfiltro))
+                {
+                    color.val[0] = vida;
+                    color.val[1] = vida;
+                    color.val[2] = vida;
                 }
+                else
+                {
+                    color.val[0] = muerte;
+                    color.val[1] = muerte;
+                    color.val[2] = muerte;
+                }
+                *(&(imagen.at<Vec3b>(y, x))) = color;
             }
         }
+        }
     }
-}
-
-bool filtro(int rojo, int verde, int azul, int filtro_a_aplicar)
-{
-
-    switch (filtro_a_aplicar)
-    {
-        //FILTRO AMARILLO
-    case 1:
-        if (rojo > 200 && verde > 100 && azul < 85)
-        {
-            return true;
-        }
-        break;
-        //FILTRO AZUL
-    case 2:
-        if (rojo < 80 && verde > 130 && azul > 170)
-        {
-            return true;
-        }
-        break;
-        //FILTRO VERDE
-    case 3:
-        if (rojo < 91 && verde > 159 && azul < 91)
-        {
-            return true;
-        }
-        break;
-    default:
-        break;
-    }
-    return false;
 }
 
 /*****Procedimiento que lee la imagen******/
