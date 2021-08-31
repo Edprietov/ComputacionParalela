@@ -94,9 +94,14 @@ void iniciar(String nombre, int numfiltro, int hilo, int total_hilos)
                 MPI_Send(&imagen, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
             }
             MPI_Bcast( &channels, 1, MPI_INT, 0, MPI_COMM_WORLD );
-
+            
              // synchronize the processes here, to make sure that the sizes are initialized:
             MPI_Barrier( MPI_COMM_WORLD );
+            for (int i = 1; i < total_hilos; i++)
+            {
+                MPI_Recv(&imagen, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+            }
+            
             cv::Rect myROI(10, 10, 100, 100);
             cv::Mat croppedImage = imagen(myROI);
             String nombre_archivo = "./Resultados/filtro" + to_string(numfiltro) + "__nombre_ " + nombre;
@@ -113,30 +118,31 @@ void iniciar(String nombre, int numfiltro, int hilo, int total_hilos)
             cout << "wi"<< endl;
             cout << imagen.data <<endl;
             for (int y = 0; y < imagen.rows; y++)
-        {
-            for (int x = inicio; x < fin; x++)
             {
-                Vec3b color = *(&(imagen.at<Vec3b>(y, x)));
-                int azul = (int)color.val[0];
-                int verde = (int)color.val[1];
-                int rojo = (int)color.val[2];
-                int promedio = (int)((azul + verde + rojo) / 3);
+                for (int x = inicio; x < fin; x++)
+                {
+                    Vec3b color = *(&(imagen.at<Vec3b>(y, x)));
+                    int azul = (int)color.val[0];
+                    int verde = (int)color.val[1];
+                    int rojo = (int)color.val[2];
+                    int promedio = (int)((azul + verde + rojo) / 3);
 
-                if (calcularVecino(rojo, verde, azul, numfiltro))
-                {
-                    color.val[0] = vida;
-                    color.val[1] = vida;
-                    color.val[2] = vida;
+                    if (calcularVecino(rojo, verde, azul, numfiltro))
+                    {
+                        color.val[0] = vida;
+                        color.val[1] = vida;
+                        color.val[2] = vida;
+                    }
+                    else
+                    {
+                        color.val[0] = muerte;
+                        color.val[1] = muerte;
+                        color.val[2] = muerte;
+                    }
+                    *(&(imagen.at<Vec3b>(y, x))) = color;
                 }
-                else
-                {
-                    color.val[0] = muerte;
-                    color.val[1] = muerte;
-                    color.val[2] = muerte;
-                }
-                *(&(imagen.at<Vec3b>(y, x))) = color;
             }
-        }
+            MPI_Send(&imagen, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
         }
     }
 }
