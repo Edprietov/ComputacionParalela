@@ -36,10 +36,11 @@ void *inicializar(String nombre, int hilo)
     Mat imagen = lectura_imagen(nombre);
 
     imwrite("Inicial" + nombre, imagen);
-    for (int k = 0; k < 200; k++){
+    for (int k = 0; k < 500; k++){
+        //cout<<k<<endl;
         imagen = iterar(imagen, hilo );
-        imwrite("Final" + nombre, imagen);
     }
+    imwrite("Final" + nombre, imagen);
     
     return 0;
 }
